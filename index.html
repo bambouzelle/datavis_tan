@@ -35,10 +35,11 @@
         for (var i = 0; i < lines.length; i++) {
           var parts = lines[i].split(',');
           if (parts.length >= 5) {
+            var nom = parts[1]
             var x = parseFloat(parts[3]);
             var y = parseFloat(parts[4]);
             if (!isNaN(x) && !isNaN(y)) {
-              coordinates.push({ x, y });
+              coordinates.push({ nom, x, y });
             }
           }
         }
@@ -59,7 +60,7 @@
         var extractedCoordinates = extractCoordinates(fileContents);
 
         extractedCoordinates.forEach(function (coord) {
-          var marker = L.marker([coord.x, coord.y]).addTo(map);
+          var marker = L.marker([coord.x, coord.y]).addTo(map).bindPopup(coord.nom);
         });
       });
     </script>

@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Carte de Nantes</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extraction des Coordonnées</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <style>
       #map {
         height: 500px;
       }
     </style>
+    
   </head>
   <body>
     <div id="map"></div>
-
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-      // Initialisation de la carte
+      // Fonction pour charger un fichier texte en utilisant XMLHttpRequest
+      function loadTextFile(file, callback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', file, true);
+        xhr.onreadystatechange = function () {
+          if (xhr.readyState === 4 && xhr.status === 200) {
+            callback(xhr.responseText);
+          }
+        };
+        xhr.send();
+      }
+
+      // Fonction pour extraire les coordonnées x et y
+      function extractCoordinates(text) {
+        var lines = text.split('\n');
+        var coordinates = [];
+
+        for (var i = 0; i < lines.length; i++) {
+          var parts = lines[i].split(',');
+          if (parts.length >= 5) {
+            var x = parseFloat(parts[3]);
+            var y = parseFloat(parts[4]);
+            if (!isNaN(x) && !isNaN(y)) {
+              coordinates.push({ x, y });
+            }
+          }
+        }
+
+        return coordinates;
+      }
+
+      // Initialisation de la carte Leaflet
       var map = L.map('map').setView([47.2184, -1.5536], 13);
 
       // Ajout d'une couche de tuiles OpenStreetMap
@@ -23,11 +54,14 @@
         maxZoom: 19,
       }).addTo(map);
 
-      // Ajout d'un marqueur pour Nantes
-      L.marker([47.2184, -1.5536]).addTo(map).bindPopup('Nantes, France');
+      // Appel de la fonction de chargement du fichier
+      loadTextFile('data/stops.txt', function (fileContents) {
+        var extractedCoordinates = extractCoordinates(fileContents);
 
-      // Zoom sur la carte
-      map.setView([47.2184, -1.5536], 13);
+        extractedCoordinates.forEach(function (coord) {
+          var marker = L.marker([coord.x, coord.y]).addTo(map);
+        });
+      });
     </script>
   </body>
 </html>

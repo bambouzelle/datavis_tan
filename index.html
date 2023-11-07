@@ -38,8 +38,9 @@
             var nom = parts[1]
             var x = parseFloat(parts[3]);
             var y = parseFloat(parts[4]);
+            var wheelChair = parts[9];
             if (!isNaN(x) && !isNaN(y)) {
-              coordinates.push({ nom, x, y });
+              coordinates.push({ nom, x, y, wheelChair });
             }
           }
         }
@@ -60,7 +61,9 @@
         var extractedCoordinates = extractCoordinates(fileContents);
 
         extractedCoordinates.forEach(function (coord) {
-          var marker = L.marker([coord.x, coord.y]).addTo(map).bindPopup(coord.nom);
+          let text = "<b>"+ coord.nom + "</b>";
+          text += (coord.wheelChair == 1 ) ? "</br> Accessible en fauteuil" : " </br> Pas accessible en fauteuil"
+          var marker = L.marker([coord.x, coord.y]).addTo(map).bindPopup(text);
         });
       });
     </script>

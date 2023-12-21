@@ -31,16 +31,22 @@
       function extractCoordinates(text) {
         var lines = text.split('\n');
         var coordinates = [];
-
+        let noms = new Set();
+        console.log(lines.length)
         for (var i = 0; i < lines.length; i++) {
           var parts = lines[i].split(',');
           if (parts.length >= 5) {
-            var nom = parts[1]
-            var x = parseFloat(parts[3]);
-            var y = parseFloat(parts[4]);
-            var wheelChair = parts[9];
-            if (!isNaN(x) && !isNaN(y)) {
-              coordinates.push({ nom, x, y, wheelChair });
+            var stopId = parts[0];
+            var nom = parts[1];
+            if (!noms.has(nom)) {
+                noms.add(nom);
+              var x = parseFloat(parts[3]);
+              var y = parseFloat(parts[4]);
+              var parent = parts[8];
+              var wheelChair = parts[9];
+              if (!isNaN(x) && !isNaN(y)) {
+                coordinates.push({ stopId, nom, x, y,parent, wheelChair });
+              }
             }
           }
         }
@@ -59,13 +65,30 @@
       // Appel de la fonction de chargement du fichier
       loadTextFile('data/stops.txt', function (fileContents) {
         var extractedCoordinates = extractCoordinates(fileContents);
-
         extractedCoordinates.forEach(function (coord) {
           let text = "<b>"+ coord.nom + "</b>";
           text += (coord.wheelChair == 1 ) ? "</br> Accessible en fauteuil" : " </br> Pas accessible en fauteuil"
           var marker = L.marker([coord.x, coord.y]).addTo(map).bindPopup(text);
+          marker.name = coord.stopId;
         });
       });
+
+      loadTextFile('data/shapes.txt', function (fileContents){
+        let lines = fileContents.split('\n');
+        let lastLine = ["","","",""];
+        for (var i = 1; i < lines.length; i++) {
+          let parts = lines[i].split(',');
+          console.log(parts)
+          console.log(parts[0])
+          console.log(lastLine[0])
+          if(parts[0] == lastLine[0]){
+            L.polyline([[parts[1],parts[2]], [lastLine[1],lastLine[2]]], { color: '#'+ parts[0].substring(0,6)}).addTo(map);
+          }
+          lastLine = parts;
+        
+        }
+        
+      })
     </script>
   </body>
 </html>

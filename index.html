@@ -32,7 +32,6 @@
         var lines = text.split('\n');
         var coordinates = [];
         let noms = new Set();
-        console.log(lines.length)
         for (var i = 0; i < lines.length; i++) {
           var parts = lines[i].split(',');
           if (parts.length >= 5) {
@@ -78,9 +77,6 @@
         let lastLine = ["","","",""];
         for (var i = 1; i < lines.length; i++) {
           let parts = lines[i].split(',');
-          console.log(parts)
-          console.log(parts[0])
-          console.log(lastLine[0])
           if(parts[0] == lastLine[0]){
             L.polyline([[parts[1],parts[2]], [lastLine[1],lastLine[2]]], { color: '#'+ parts[0].substring(0,6)}).addTo(map);
           }
